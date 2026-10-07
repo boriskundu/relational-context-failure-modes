@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper below."
+title: "Failure Modes of Imperfect Relational Context in LLM Document Extraction"
+type: software
+authors:
+  - family-names: Kundu
+    given-names: Boris
+    email: boriskundu@gmail.com
+  - family-names: Mehta
+    given-names: Pooja
+    email: poojamehta.mba@gmail.com
+repository-code: "https://github.com/boriskundu/relational-context-failure-modes"
+license: MIT
+preferred-citation:
+  type: conference-paper
+  title: "Failure Modes of Imperfect Relational Context in LLM Document Extraction"
+  authors:
+    - family-names: Kundu
+      given-names: Boris
+    - family-names: Mehta
+      given-names: Pooja
+  collection-title: "Proceedings of the AACL-IJCNLP 2026 Workshop on Knowledge Graphs and Agentic Systems Interplay (NORA)"
+  year: 2026

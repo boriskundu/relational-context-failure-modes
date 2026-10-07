@@ -1,0 +1,314 @@
+{
+  "no_edge_blank_penalty": {
+    "round2": {
+      "claude-sonnet-5": {
+        "point_estimate_a": 0.176056338028169,
+        "point_estimate_b": 0.13028169014084506,
+        "point_delta": 0.04577464788732394,
+        "ci_low": 0.02527379949452399,
+        "ci_high": 0.06798029556650247,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.020114942528735635,
+        "ci_high_bonferroni": 0.07441471571906355,
+        "bonferroni_n": 4
+      },
+      "gpt-5": {
+        "point_estimate_a": 0.1637323943661972,
+        "point_estimate_b": 0.11619718309859155,
+        "point_delta": 0.04753521126760564,
+        "ci_low": 0.016620498614958443,
+        "ci_high": 0.08210180623973727,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.008000000000000007,
+        "ci_high_bonferroni": 0.09241499564080208,
+        "bonferroni_n": 4
+      },
+      "qwen3.6-27b": {
+        "point_estimate_a": 0.5316223648029331,
+        "point_estimate_b": 0.11824014665444546,
+        "point_delta": 0.41338221814848763,
+        "ci_low": 0.34270172257479603,
+        "ci_high": 0.48278985507246375,
+        "n_documents": 184,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.32228915662650603,
+        "ci_high_bonferroni": 0.501675041876047,
+        "bonferroni_n": 4
+      },
+      "gemini-3.7-flash": {
+        "point_estimate_a": 0.45686619718309857,
+        "point_estimate_b": 0.10475352112676056,
+        "point_delta": 0.352112676056338,
+        "ci_low": 0.27675585284280935,
+        "ci_high": 0.4291996481970097,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.25764596848934196,
+        "ci_high_bonferroni": 0.4506398537477148,
+        "bonferroni_n": 4
+      }
+    },
+    "round3": {
+      "claude-sonnet-5": {
+        "point_estimate_a": 0.3617957746478873,
+        "point_estimate_b": 0.12147887323943662,
+        "point_delta": 0.2403169014084507,
+        "ci_low": 0.19039595619208088,
+        "ci_high": 0.29668246445497626,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.17819148936170215,
+        "ci_high_bonferroni": 0.313035204567079,
+        "bonferroni_n": 4
+      },
+      "gpt-5": {
+        "point_estimate_a": 0.19102112676056338,
+        "point_estimate_b": 0.10915492957746478,
+        "point_delta": 0.0818661971830986,
+        "ci_low": 0.04638715432649419,
+        "ci_high": 0.12893982808022925,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.04039408866995074,
+        "ci_high_bonferroni": 0.14368770764119604,
+        "bonferroni_n": 4
+      },
+      "qwen3.6-27b": {
+        "point_estimate_a": 0.4395017793594306,
+        "point_estimate_b": 0.1201067615658363,
+        "point_delta": 0.31939501779359425,
+        "ci_low": 0.2569444444444444,
+        "ci_high": 0.38341968911917096,
+        "n_documents": 186,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.24175824175824173,
+        "ci_high_bonferroni": 0.40145322434150776,
+        "bonferroni_n": 4
+      },
+      "gemini-3.7-flash": {
+        "point_estimate_a": 0.4084507042253521,
+        "point_estimate_b": 0.1073943661971831,
+        "point_delta": 0.301056338028169,
+        "ci_low": 0.23686405337781485,
+        "ci_high": 0.36978131212723653,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.2191544434857636,
+        "ci_high_bonferroni": 0.38781431334622823,
+        "bonferroni_n": 4
+      }
+    },
+    "round3_minus_round2": {
+      "claude-sonnet-5": {
+        "point_delta": 0.19454225352112675,
+        "ci_low": 0.14420600858369098,
+        "ci_high": 0.24950690335305725,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.1319073083778966,
+        "ci_high_bonferroni": 0.2651880424300868,
+        "bonferroni_n": 4
+      },
+      "gpt-5": {
+        "point_delta": 0.034330985915492954,
+        "ci_low": -0.01104972375690609,
+        "ci_high": 0.08778280542986425,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.021910604732690603,
+        "ci_high_bonferroni": 0.10297872340425535,
+        "bonferroni_n": 4
+      },
+      "qwen3.6-27b": {
+        "point_delta": -0.08707607699358388,
+        "ci_low": -0.1568627450980391,
+        "ci_high": -0.016917293233082664,
+        "n_documents": 184,
+        "n_dropped_one_sided": 2,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.17611159546643418,
+        "ci_high_bonferroni": 0.0,
+        "bonferroni_n": 4
+      },
+      "gemini-3.7-flash": {
+        "point_delta": -0.051056338028169,
+        "ci_low": -0.12752858399296396,
+        "ci_high": 0.022727272727272763,
+        "n_documents": 187,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.15171898355754854,
+        "ci_high_bonferroni": 0.042594385285575964,
+        "bonferroni_n": 4
+      }
+    }
+  },
+  "edge_wrong_misassoc_delta": {
+    "round2": {
+      "claude-sonnet-5": {
+        "point_estimate_a": 0.12004530011325028,
+        "point_estimate_b": 0.03397508493771234,
+        "point_delta": 0.08607021517553794,
+        "ci_low": 0.058516196447230925,
+        "ci_high": 0.1166464155528554,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.051819184123484005,
+        "ci_high_bonferroni": 0.1259351620947631,
+        "bonferroni_n": 4
+      },
+      "gpt-5": {
+        "point_estimate_a": 0.05436013590033975,
+        "point_estimate_b": 0.03284258210645526,
+        "point_delta": 0.021517553793884488,
+        "ci_low": 0.003658536585365857,
+        "ci_high": 0.04009163802978236,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.001152073732718896,
+        "ci_high_bonferroni": 0.04524886877828054,
+        "bonferroni_n": 4
+      },
+      "qwen3.6-27b": {
+        "point_estimate_a": 0.26913875598086123,
+        "point_estimate_b": 0.029904306220095694,
+        "point_delta": 0.23923444976076555,
+        "ci_low": 0.18143459915611815,
+        "ci_high": 0.29804372842347526,
+        "n_documents": 171,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.16582278481012658,
+        "ci_high_bonferroni": 0.3150057273768614,
+        "bonferroni_n": 4
+      },
+      "gemini-3.7-flash": {
+        "point_estimate_a": 0.19252548131370328,
+        "point_estimate_b": 0.03850509626274066,
+        "point_delta": 0.15402038505096263,
+        "ci_low": 0.10828729281767954,
+        "ci_high": 0.20227272727272727,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.09748083242059145,
+        "ci_high_bonferroni": 0.2164599774520857,
+        "bonferroni_n": 4
+      }
+    },
+    "round3": {
+      "claude-sonnet-5": {
+        "point_estimate_a": 0.25934314835787087,
+        "point_estimate_b": 0.045300113250283124,
+        "point_delta": 0.21404303510758774,
+        "ci_low": 0.16726403823178015,
+        "ci_high": 0.2620041753653445,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.15581395348837207,
+        "ci_high_bonferroni": 0.2755813953488372,
+        "bonferroni_n": 4
+      },
+      "gpt-5": {
+        "point_estimate_a": 0.06342015855039637,
+        "point_estimate_b": 0.02944507361268403,
+        "point_delta": 0.03397508493771234,
+        "ci_low": 0.015306122448979595,
+        "ci_high": 0.05380116959064327,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.010869565217391304,
+        "ci_high_bonferroni": 0.05997392438070404,
+        "bonferroni_n": 4
+      },
+      "qwen3.6-27b": {
+        "point_estimate_a": 0.2041522491349481,
+        "point_estimate_b": 0.025374855824682813,
+        "point_delta": 0.17877739331026526,
+        "ci_low": 0.13956310679611653,
+        "ci_high": 0.21867881548974943,
+        "n_documents": 173,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.12848484848484848,
+        "ci_high_bonferroni": 0.23022432113341207,
+        "bonferroni_n": 4
+      },
+      "gemini-3.7-flash": {
+        "point_estimate_a": 0.19365798414496035,
+        "point_estimate_b": 0.031710079275198186,
+        "point_delta": 0.16194790486976218,
+        "ci_low": 0.11764705882352941,
+        "ci_high": 0.20930232558139536,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.10697115384615384,
+        "ci_high_bonferroni": 0.2232346241457859,
+        "bonferroni_n": 4
+      }
+    },
+    "round3_minus_round2": {
+      "claude-sonnet-5": {
+        "point_delta": 0.12797281993204979,
+        "ci_low": 0.08651399491094149,
+        "ci_high": 0.17056074766355142,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": 0.07496653279785812,
+        "ci_high_bonferroni": 0.18317972350230413,
+        "bonferroni_n": 4
+      },
+      "gpt-5": {
+        "point_delta": 0.012457531143827853,
+        "ci_low": -0.006211180124223604,
+        "ci_high": 0.03184713375796178,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.011235955056179775,
+        "ci_high_bonferroni": 0.03759398496240601,
+        "bonferroni_n": 4
+      },
+      "qwen3.6-27b": {
+        "point_delta": -0.05861244019138756,
+        "ci_low": -0.11055276381909543,
+        "ci_high": -0.00918635170603671,
+        "n_documents": 171,
+        "n_dropped_one_sided": 2,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.12619047619047624,
+        "ci_high_bonferroni": 0.0037546933667083893,
+        "bonferroni_n": 4
+      },
+      "gemini-3.7-flash": {
+        "point_delta": 0.00792751981879955,
+        "ci_low": -0.04074505238649592,
+        "ci_high": 0.056583242655059846,
+        "n_documents": 174,
+        "n_dropped_one_sided": 0,
+        "n_boot": 20000,
+        "ci_low_bonferroni": -0.053333333333333316,
+        "ci_high_bonferroni": 0.06971677559912853,
+        "bonferroni_n": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Secrets
+.env
+
+# Data and raw run outputs (FUNSD is downloaded on demand; per-question model outputs are not released)
+data/
+logs/
+results/extractions/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

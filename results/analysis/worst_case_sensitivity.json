@@ -1,0 +1,50 @@
+{
+  "Heuristic-Flat_qwen3.6-27b": {
+    "clean_delta_pp": -20.04,
+    "worst_case_delta_pp": -20.07,
+    "shift_pp": -0.03,
+    "n_clean_documents": 193,
+    "added_documents": [
+      "0000999294"
+    ],
+    "added_document_scorable_questions": [
+      41
+    ]
+  },
+  "Oracle-Flat_qwen3.6-27b": {
+    "clean_delta_pp": 7.89,
+    "worst_case_delta_pp": 7.44,
+    "shift_pp": -0.45,
+    "n_clean_documents": 193,
+    "added_documents": [
+      "0000999294"
+    ],
+    "added_document_scorable_questions": [
+      41
+    ]
+  },
+  "Deranged-Flat_qwen3.6-27b": {
+    "clean_delta_pp": -24.74,
+    "worst_case_delta_pp": -24.72,
+    "shift_pp": 0.01,
+    "n_clean_documents": 188,
+    "added_documents": [
+      "0000999294"
+    ],
+    "added_document_scorable_questions": [
+      41
+    ]
+  },
+  "Deranged-Flat_claude-sonnet-5": {
+    "clean_delta_pp": -24.63,
+    "worst_case_delta_pp": -24.7,
+    "shift_pp": -0.07,
+    "n_clean_documents": 188,
+    "added_documents": [
+      "82253362_3364"
+    ],
+    "added_document_scorable_questions": [
+      14
+    ]
+  }
+}
