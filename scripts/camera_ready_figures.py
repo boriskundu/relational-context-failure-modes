@@ -64,7 +64,7 @@ def plot_prompt_sensitivity(out_path: Path) -> None:
     traj = json.loads(ANALYSIS_JSON.read_text(encoding="utf-8"))["wrong_edge_consistency_trajectory"]
     rounds = ["run1", "run2", "run3"]
     colors = ["#4C72B0", "#DD8452", "#55A868"]
-    fig, axes = plt.subplots(1, 2, figsize=(9, 4), sharey=True)
+    fig, axes = plt.subplots(2, 1, figsize=(3.3, 4.6), sharey=True)
     for ax, cond, title in zip(axes, ["predicted_graph", "shuffled_graph"], ["Heuristic", "Deranged"]):
         width = 0.8 / len(rounds)
         for i, rnd in enumerate(rounds):
@@ -73,9 +73,11 @@ def plot_prompt_sensitivity(out_path: Path) -> None:
                    color=colors[i], label=f"Round {i + 1}")
         ax.set_xticks([k + width * (len(rounds) - 1) / 2 for k in range(len(MODELS))])
         ax.set_xticklabels([LABELS[m] for m in MODELS])
-        ax.set_title(f"{title} graph")
-        ax.set_ylabel("Wrong-edge-consistent rate (%)")
-    axes[1].legend(fontsize=8)
+        ax.set_title(f"{title} graph", fontsize=9)
+        ax.set_ylabel("Wrong-edge-consistent (%)", fontsize=8)
+        ax.tick_params(labelsize=8)
+    axes[0].set_ylim(0, 38)
+    axes[0].legend(fontsize=7, ncol=3, loc="upper center")
     fig.tight_layout()
     fig.savefig(out_path, dpi=300)
     plt.close(fig)
