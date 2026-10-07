@@ -1,5 +1,6 @@
 """Shared shape-builder for the three graph conditions (oracle/predicted/shuffled) — identical
 entity list as Flat, differing only in which edge list is attached."""
+
 from collections import defaultdict
 
 from agentic_docs.funsd.parse import DocumentRecord, reading_order_key
@@ -50,7 +51,8 @@ def shown_answer_text_by_question(doc: DocumentRecord, edges: list) -> dict[int,
 
     result = {}
     for qid, answer_ids in answer_ids_by_question.items():
-        answers = sorted((entities_by_id[i] for i in answer_ids if i in entities_by_id),
-                          key=reading_order_key)
+        answers = sorted(
+            (entities_by_id[i] for i in answer_ids if i in entities_by_id), key=reading_order_key
+        )
         result[qid] = " ".join(e.text for e in answers if e.text)
     return result

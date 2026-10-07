@@ -1,7 +1,6 @@
 """Per-document heuristic edge precision and coverage, correlated against the per-document
-Heuristic-Flat accuracy delta (2026-09-03 review round). Descriptive/observational only -- this
-does NOT manipulate precision or coverage independently (both reviews' explicit caution against
-overclaiming this as a causal "quality curve"), it asks whether documents where the heuristic
+Heuristic-Flat accuracy delta. Descriptive/observational only -- this
+does NOT manipulate precision or coverage independently (it is not a causal "quality curve"), it asks whether documents where the heuristic
 happens to be more precise, or happens to cover more of the question set, also happen to show a
 larger or smaller accuracy delta.
 
@@ -9,11 +8,10 @@ larger or smaller accuracy delta.
 heuristic/validate.py) -- this script is the first thing to loop them across the full corpus and
 persist a per-document table, joined against Round 3's already-scored per-document accuracy delta.
 Zero new API calls. Correlation is a hand-rolled Spearman rho (see spearman_rho below) rather than
-scipy.stats -- this environment blocks one of scipy.stats' compiled DLLs via a Windows Application
-Control policy.
+scipy.stats.
 
 Ad hoc script, not a permanent CLI capability. Run with:
-    .venv/Scripts/python scripts/precision_coverage_regression.py
+    python scripts/precision_coverage_regression.py
 """
 import json
 
@@ -46,12 +44,9 @@ def _ranks(values: list[float]) -> list[float]:
 
 
 def spearman_rho(xs: list[float], ys: list[float]) -> float | None:
-    """Pure-Python Spearman rank correlation -- this environment's scipy.stats import is blocked
-    by a Windows Application Control policy on one of its compiled DLLs (unrelated to this
-    project's own code), so this avoids the dependency entirely rather than working around it.
+    """Pure-Python Spearman rank correlation, with no scipy.stats dependency.
     No p-value is computed (would need a t-distribution CDF); this analysis is reported as
-    descriptive/observational only, per both reviews' explicit caution against a causal framing,
-    so rho and n are what's actually used in the paper."""
+    descriptive/observational only, so rho and n are what's actually used in the paper."""
     n = len(xs)
     if n < 2:
         return None

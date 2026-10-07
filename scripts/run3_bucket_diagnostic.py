@@ -1,10 +1,9 @@
-"""One-off diagnostic for Run3, per the locked review plan (2026-09-03): ID-based edge_correct/
-edge_wrong/no_edge bucket stratification of Heuristic (predicted_graph) vs Flat, error taxonomy +
+"""Diagnostic for Run3: edge_correct/edge_wrong/no_edge bucket stratification of Heuristic (predicted_graph) vs Flat, error taxonomy +
 initial->final by bucket, and a worst-case sensitivity check on the 4 persistent failed cells.
 
 Not a permanent CLI capability -- ad hoc script reusing existing scoring/representation functions,
 same pattern as the Smoke Test A/B ad hoc runs. Run with:
-    .venv/Scripts/python scripts/run3_bucket_diagnostic.py
+    python scripts/run3_bucket_diagnostic.py
 """
 import json
 from collections import defaultdict
@@ -46,7 +45,7 @@ def align(question_pairs, answers: dict) -> dict[int, str]:
 
 
 def compute_bucket_records(run_path: str) -> dict[str, list[dict]]:
-    """Same ID-based bucket stratification logic as Run3's original diagnostic, factored out so it
+    """Same bucket stratification logic as Run3's original diagnostic, factored out so it
     can be re-run against ANY round's raw extraction JSON (representations/bucket membership are
     pure functions of the document, not the round -- only the model rows themselves differ)."""
     documents = load_documents(DOCUMENTS_PATH)

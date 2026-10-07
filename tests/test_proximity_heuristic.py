@@ -38,7 +38,9 @@ def test_predict_links_breaks_ties_by_earlier_reading_order():
     answer = Entity(id=2, text="A", label="answer", box=(100, 100, 110, 110))
     q_early = Entity(id=0, text="Q1", label="question", box=(95, 95, 105, 105))
     q_late = Entity(id=1, text="Q2", label="question", box=(95, 105, 105, 115))
-    doc = DocumentRecord(doc_id="x", entities=[q_early, q_late, answer], links=[], scorable_pairs=[])
+    doc = DocumentRecord(
+        doc_id="x", entities=[q_early, q_late, answer], links=[], scorable_pairs=[]
+    )
 
     edges = predict_links(doc)
     assert edges == [(0, 2)]  # answer 2 must link to q_early (id 0), not q_late (id 1)

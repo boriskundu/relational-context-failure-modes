@@ -20,6 +20,7 @@ question (not from the representation — its original, correct edge is kept, si
 incorrect one isn't possible, but scoring it under "Shuffled" would misleadingly count a still-correct
 edge as if it were part of the negative control).
 """
+
 import random
 from collections import defaultdict
 

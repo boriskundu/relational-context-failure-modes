@@ -9,10 +9,20 @@ from agentic_docs.metrics import (
 )
 
 
-def _score(doc_id="d1", condition="flat", model="m", stage="final", qid=1,
-           predicted="", gold="", others=None, shown=None):
-    return score_field(doc_id, condition, model, stage, qid, predicted, gold, others or [],
-                        shown_answer_text=shown)
+def _score(
+    doc_id="d1",
+    condition="flat",
+    model="m",
+    stage="final",
+    qid=1,
+    predicted="",
+    gold="",
+    others=None,
+    shown=None,
+):
+    return score_field(
+        doc_id, condition, model, stage, qid, predicted, gold, others or [], shown_answer_text=shown
+    )
 
 
 def test_exact_match_when_predicted_equals_gold():
@@ -71,7 +81,9 @@ def test_score_field_threshold_override_changes_match_outcome():
     default = score_field("d1", "flat", "m", "final", 1, "Jon Smith", "John Smith", [])
     assert default.fuzzy_match is True
 
-    strict = score_field("d1", "flat", "m", "final", 1, "Jon Smith", "John Smith", [], threshold=95.0)
+    strict = score_field(
+        "d1", "flat", "m", "final", 1, "Jon Smith", "John Smith", [], threshold=95.0
+    )
     assert strict.fuzzy_match is False
 
 
@@ -111,10 +123,10 @@ def test_relation_following_error_false_when_model_gets_it_right_despite_wrong_e
 
 def test_aggregate_relation_following_error_rate_denominator_excludes_not_applicable():
     scores = [
-        _score(qid=1, predicted="A", gold="A", shown=None),         # N/A: no edge
-        _score(qid=2, predicted="A", gold="A", shown="A"),          # N/A: edge was correct
+        _score(qid=1, predicted="A", gold="A", shown=None),  # N/A: no edge
+        _score(qid=2, predicted="A", gold="A", shown="A"),  # N/A: edge was correct
         _score(qid=3, predicted="Finance", gold="A", shown="Finance"),  # followed wrong edge
-        _score(qid=4, predicted="", gold="A", shown="Finance"),     # wrong edge, but not followed
+        _score(qid=4, predicted="", gold="A", shown="Finance"),  # wrong edge, but not followed
     ]
     result = aggregate(scores)
     assert result["n"] == 4
@@ -130,9 +142,9 @@ def test_aggregate_empty_list_has_none_rates():
 
 def test_aggregate_computes_rates_correctly():
     scores = [
-        _score(qid=1, predicted="A", gold="A"),               # correct
-        _score(qid=2, predicted="", gold="B"),                 # omission
-        _score(qid=3, predicted="X", gold="", others=["Y"]),   # hallucination
+        _score(qid=1, predicted="A", gold="A"),  # correct
+        _score(qid=2, predicted="", gold="B"),  # omission
+        _score(qid=3, predicted="X", gold="", others=["Y"]),  # hallucination
         _score(qid=4, predicted="Y", gold="C", others=["Y"]),  # misassociation
     ]
     result = aggregate(scores)
@@ -145,14 +157,14 @@ def test_aggregate_computes_rates_correctly():
 
 def test_correction_regression_math():
     initial = [
-        _score(doc_id="d1", qid=1, stage="initial", predicted="", gold="A"),      # wrong (omission)
-        _score(doc_id="d1", qid=2, stage="initial", predicted="B", gold="B"),     # correct
-        _score(doc_id="d1", qid=3, stage="initial", predicted="C", gold="C"),     # correct
+        _score(doc_id="d1", qid=1, stage="initial", predicted="", gold="A"),  # wrong (omission)
+        _score(doc_id="d1", qid=2, stage="initial", predicted="B", gold="B"),  # correct
+        _score(doc_id="d1", qid=3, stage="initial", predicted="C", gold="C"),  # correct
     ]
     final = [
-        _score(doc_id="d1", qid=1, stage="final", predicted="A", gold="A"),   # corrected
-        _score(doc_id="d1", qid=2, stage="final", predicted="B", gold="B"),   # stayed correct
-        _score(doc_id="d1", qid=3, stage="final", predicted="", gold="C"),    # regressed
+        _score(doc_id="d1", qid=1, stage="final", predicted="A", gold="A"),  # corrected
+        _score(doc_id="d1", qid=2, stage="final", predicted="B", gold="B"),  # stayed correct
+        _score(doc_id="d1", qid=3, stage="final", predicted="", gold="C"),  # regressed
     ]
     result = correction_regression(initial, final)
     assert result["n_initially_wrong"] == 1
@@ -175,18 +187,19 @@ def test_correction_regression_no_initially_wrong_fields_gives_none_rate():
 def test_bootstrap_resamples_documents_not_individual_fields():
     # Two documents; scores_a has doc2 perfect, doc1 all wrong. A bootstrap sample that never
     # draws doc2 must show 0% accuracy, which is only possible if it resamples whole documents.
-    scores_a = (
-        [_score(doc_id="d1", qid=i, predicted="", gold="X") for i in range(5)]
-        + [_score(doc_id="d2", qid=i, predicted="X", gold="X") for i in range(5)]
-    )
-    scores_b = [_score(doc_id="d1", qid=i, predicted="", gold="X") for i in range(5)] + \
-        [_score(doc_id="d2", qid=i, predicted="", gold="X") for i in range(5)]
+    scores_a = [_score(doc_id="d1", qid=i, predicted="", gold="X") for i in range(5)] + [
+        _score(doc_id="d2", qid=i, predicted="X", gold="X") for i in range(5)
+    ]
+    scores_b = [_score(doc_id="d1", qid=i, predicted="", gold="X") for i in range(5)] + [
+        _score(doc_id="d2", qid=i, predicted="", gold="X") for i in range(5)
+    ]
 
     from agentic_docs.metrics import accuracy_statistic
+
     result = bootstrap_document_level(scores_a, scores_b, accuracy_statistic, n_boot=200, seed=1)
     assert result["n_documents"] == 2
-    assert result["point_estimate_a"] == 0.5   # doc1 all wrong, doc2 all right -> 50%
-    assert result["point_estimate_b"] == 0.0   # both docs all wrong
+    assert result["point_estimate_a"] == 0.5  # doc1 all wrong, doc2 all right -> 50%
+    assert result["point_estimate_b"] == 0.0  # both docs all wrong
     assert result["point_delta"] == 0.5
 
 
@@ -222,13 +235,17 @@ def test_bootstrap_drops_documents_missing_from_either_side():
     # d1 is scored on both sides; d2 only exists in scores_a (e.g. its cell parse-errored under
     # condition B and was excluded from scoring entirely). Including d2 would break the pairing --
     # it contributes real fields to A and none to B on every resample.
-    scores_a = (
-        [_score(doc_id="d1", qid=i, predicted="X", gold="X") for i in range(4)]  # d1: 100% correct
-        + [_score(doc_id="d2", qid=i, predicted="", gold="X") for i in range(4)]  # d2: 0% correct
-    )
-    scores_b = [_score(doc_id="d1", qid=i, predicted="", gold="X") for i in range(4)]  # d1: 0% correct
+    scores_a = [
+        _score(doc_id="d1", qid=i, predicted="X", gold="X") for i in range(4)
+    ] + [  # d1: 100% correct
+        _score(doc_id="d2", qid=i, predicted="", gold="X") for i in range(4)
+    ]  # d2: 0% correct
+    scores_b = [
+        _score(doc_id="d1", qid=i, predicted="", gold="X") for i in range(4)
+    ]  # d1: 0% correct
 
     from agentic_docs.metrics import accuracy_statistic
+
     result = bootstrap_document_level(scores_a, scores_b, accuracy_statistic, n_boot=200, seed=1)
     assert result["n_documents"] == 1  # only d1 is common to both sides
     assert result["n_dropped_one_sided"] == 1  # d2
@@ -241,6 +258,7 @@ def test_bootstrap_point_delta_is_deterministic_given_seed():
     scores_a = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
     scores_b = [_score(doc_id="d1", qid=1, predicted="", gold="A")]
     from agentic_docs.metrics import accuracy_statistic
+
     r1 = bootstrap_document_level(scores_a, scores_b, accuracy_statistic, n_boot=50, seed=7)
     r2 = bootstrap_document_level(scores_a, scores_b, accuracy_statistic, n_boot=50, seed=7)
     assert r1 == r2
@@ -250,10 +268,9 @@ def test_relation_following_error_rate_statistic_is_pooled_not_macro_averaged():
     # Doc d1 has 1 applicable question (error), doc d2 has 3 (all no error). Pooled = 1/4 = 25%,
     # NOT the mean of each document's own rate (100% and 0%, averaging to 50%) -- the distinction
     # this statistic exists to enforce, matching accuracy_statistic's own pooled convention.
-    scores = (
-        [_score(doc_id="d1", qid=1, predicted="Finance", gold="A", shown="Finance")]
-        + [_score(doc_id="d2", qid=i, predicted="A", gold="A", shown="WRONG") for i in range(3)]
-    )
+    scores = [_score(doc_id="d1", qid=1, predicted="Finance", gold="A", shown="Finance")] + [
+        _score(doc_id="d2", qid=i, predicted="A", gold="A", shown="WRONG") for i in range(3)
+    ]
     assert relation_following_error_rate_statistic(scores) == 0.25
 
 
@@ -264,17 +281,20 @@ def test_relation_following_error_rate_statistic_zero_when_none_applicable():
 
 def test_bootstrap_interaction_contrast_zero_when_both_groups_have_equal_effect():
     from agentic_docs.metrics import accuracy_statistic
+
     # Both groups A and B show the identical +100pp (treatment) vs 0pp (control) effect -- the
     # interaction (difference of the two differences) must be exactly zero.
     treatment = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
     control = [_score(doc_id="d1", qid=1, predicted="", gold="A")]
     result = bootstrap_interaction_contrast(
-        treatment, control, treatment, control, accuracy_statistic, n_boot=50, seed=1)
+        treatment, control, treatment, control, accuracy_statistic, n_boot=50, seed=1
+    )
     assert result["point_delta"] == 0.0
 
 
 def test_bootstrap_interaction_contrast_detects_a_real_difference():
     from agentic_docs.metrics import accuracy_statistic
+
     # Group A: treatment perfect, control all wrong (a +100pp effect). Group B: no effect at all
     # (both perfect). The interaction must be +100pp, and its CI must exclude zero.
     a_treatment = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
@@ -282,20 +302,23 @@ def test_bootstrap_interaction_contrast_detects_a_real_difference():
     b_treatment = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
     b_control = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
     result = bootstrap_interaction_contrast(
-        a_treatment, a_control, b_treatment, b_control, accuracy_statistic, n_boot=50, seed=1)
+        a_treatment, a_control, b_treatment, b_control, accuracy_statistic, n_boot=50, seed=1
+    )
     assert result["point_delta"] == 1.0
 
 
 def test_bootstrap_interaction_contrast_drops_documents_missing_from_any_side():
     from agentic_docs.metrics import accuracy_statistic
-    a_treatment = [_score(doc_id="d1", qid=1, predicted="A", gold="A"),
-                   _score(doc_id="d2", qid=1, predicted="A", gold="A")]  # d2 only here
+
+    a_treatment = [
+        _score(doc_id="d1", qid=1, predicted="A", gold="A"),
+        _score(doc_id="d2", qid=1, predicted="A", gold="A"),
+    ]  # d2 only here
     a_control = [_score(doc_id="d1", qid=1, predicted="", gold="A")]
     b_treatment = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
     b_control = [_score(doc_id="d1", qid=1, predicted="A", gold="A")]
     result = bootstrap_interaction_contrast(
-        a_treatment, a_control, b_treatment, b_control, accuracy_statistic, n_boot=50, seed=1)
+        a_treatment, a_control, b_treatment, b_control, accuracy_statistic, n_boot=50, seed=1
+    )
     assert result["n_documents"] == 1
     assert result["n_dropped_one_sided"] == 1
-
-

@@ -20,6 +20,10 @@ The code uses earlier internal names for two of the conditions.
 | Deranged | `shuffled_graph` | degree-preserving derangement, nearly all wrong |
 | Raw (background only) | `raw` | text only, no labels or layout |
 
+Code and result keys also use internal labels RQ1 to RQ5. RQ1 is Raw vs Flat, RQ2 is Heuristic vs
+Flat, RQ3 is Oracle vs Heuristic, RQ4 is Deranged vs Flat, and RQ5 is the verify step's
+correction and regression rates. The paper does not use these labels.
+
 Prompt rounds in the paper map to files as follows. Round 1 is `docs/prompt_versions/run1_*` and
 `results/analysis/summary.json`. Round 2 is `docs/prompt_versions/run2_*` and
 `results/analysis/summary_condition_blind.json`. Round 3, the primary evaluation, is
@@ -89,7 +93,11 @@ Hosted models change over time, so a rerun will not reproduce the paper's number
   scoring, and analysis.
 - `src/agentic_docs/skills/` and `docs/prompt_versions/`: the prompt templates for every round.
 - `tests/`: offline test suite.
-- `scripts/`: post-hoc analyses and figure generation used for the paper.
+- `scripts/`: post-hoc analyses and figure generation used for the paper. Only
+  `scripts/camera_ready_figures.py` runs from the released files (`python
+  scripts/camera_ready_figures.py`). The others read per-question outputs under
+  `results/extractions/`, which are not released, so they need a rerun of `docs run` first; their
+  results are the JSON files in `results/analysis/`.
 - `results/analysis/`: aggregate analysis files behind the paper's tables.
 
 Not included: FUNSD itself, and per-question model outputs (they contain FUNSD text). The

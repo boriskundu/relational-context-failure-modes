@@ -11,6 +11,7 @@ convention — see the plan's Verification section).
 Ties (two candidate questions at equal distance) are broken by picking the one earlier in reading
 order, so the result is fully deterministic for a fixed document.
 """
+
 from agentic_docs.funsd.parse import DocumentRecord, Entity, reading_order_key
 
 

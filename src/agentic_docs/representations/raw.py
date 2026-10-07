@@ -5,6 +5,7 @@ Named precisely in the paper as "structure-stripped, reading-order text" — it'
 box position (a soft positional signal survives), just not the literal unstructured document text
 an OCR pass over a printed page would produce. See Key decision #1.
 """
+
 from agentic_docs.funsd.parse import DocumentRecord, reading_order_key
 
 

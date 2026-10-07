@@ -1,5 +1,5 @@
-"""Scorer sensitivity checks for the RQ2/RQ4 headline contrasts (2026-09-03 review round,
-Limitations item 6): does the primary fuzzy-match ruler's exact threshold choice, or its
+"""Scorer sensitivity checks for the RQ2/RQ4 headline contrasts (see Limitations):
+does the primary fuzzy-match ruler's exact threshold choice, or its
 known order-sensitivity on multi-value answers, change the paper's reported conclusions?
 
 Two independent checks, both against Round 3 (results/extractions/run3.json) only, since that's
@@ -11,12 +11,12 @@ where the headline RQ2/RQ4 numbers come from:
 2. **Order-insensitive multi-value rescoring**: for scorable pairs with more than one gold answer
    entity (`len(answer_entity_ids) > 1`), rescore correctness via a token-multiset overlap
    comparator instead of straight `fuzz.ratio` on the concatenated (order-dependent) string --
-   already-disclosed scorer limitation (Limitations item 6). Single-value pairs are untouched.
+   already-disclosed scorer limitation (see Limitations). Single-value pairs are untouched.
    Reports the resulting RQ2/RQ4 deltas alongside the primary numbers, as a SEPARATE sensitivity
    check -- this alternate scorer is not swapped in as the primary scorer anywhere else.
 
 Ad hoc script, not a permanent CLI capability, zero new API calls. Run with:
-    .venv/Scripts/python scripts/scorer_sensitivity.py
+    python scripts/scorer_sensitivity.py
 """
 import json
 from collections import Counter, defaultdict

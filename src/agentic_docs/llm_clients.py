@@ -8,9 +8,11 @@ Adding a new provider:
   2. Add an entry to ``MODELS`` in config.py.
   3. Handle the new provider string in ``_PROVIDER_CLASSES``.
 """
+
 import os
 import time
 from abc import ABC, abstractmethod
+from typing import Any
 
 from agentic_docs.config import (
     ANTHROPIC_MAX_OUTPUT_TOKENS,
@@ -39,6 +41,7 @@ class EmptyResponseError(RuntimeError):
 
 # ── Retry decorator ──────────────────────────────────────────────────────────
 
+
 def _is_rate_limit(exc: Exception) -> bool:
     if getattr(exc, "status_code", None) == 429:
         return True
@@ -53,6 +56,7 @@ def _with_retry(max_retries: int = RUN_MAX_RETRIES, base_delay: float = RUN_BASE
     again (retrying just burns ~45s+ of backoff and repeats the cost for no chance of a different
     outcome) -- let it propagate immediately as a parse error instead.
     """
+
     def decorator(fn):
         def wrapper(*args, **kwargs):
             for attempt in range(max_retries):
@@ -62,19 +66,25 @@ def _with_retry(max_retries: int = RUN_MAX_RETRIES, base_delay: float = RUN_BASE
                     raise
                 except Exception as exc:
                     if attempt < max_retries - 1:
-                        wait = base_delay * (2 ** attempt)
+                        wait = base_delay * (2**attempt)
                         if _is_rate_limit(exc):
                             wait = max(wait, RATE_LIMIT_MIN_WAIT)
-                        print(f"  Retry {attempt + 1}/{max_retries} in {wait:.0f}s "
-                              f"-- {type(exc).__name__}: {exc}", flush=True)
+                        print(
+                            f"  Retry {attempt + 1}/{max_retries} in {wait:.0f}s "
+                            f"-- {type(exc).__name__}: {exc}",
+                            flush=True,
+                        )
                         time.sleep(wait)
                     else:
                         raise
+
         return wrapper
+
     return decorator
 
 
 # ── Base class ───────────────────────────────────────────────────────────────
+
 
 class LLMClient(ABC):
     """A minimal text-in/text-out client. All prompts are built by callers."""
@@ -86,10 +96,17 @@ class LLMClient(ABC):
 
 # ── Anthropic (Claude) ───────────────────────────────────────────────────────
 
+
 class AnthropicClient(LLMClient):
-    def __init__(self, model_id: str, temperature: float | None = None,
-                 thinking: dict | None = None, effort: str | None = None):
+    def __init__(
+        self,
+        model_id: str,
+        temperature: float | None = None,
+        thinking: dict | None = None,
+        effort: str | None = None,
+    ):
         import anthropic
+
         self._client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
         self.model_id = model_id
         self.temperature = temperature  # None => omit kwarg (Sonnet 5 rejects explicit temperature)
@@ -101,7 +118,7 @@ class AnthropicClient(LLMClient):
 
     @_with_retry()
     def generate_text(self, prompt: str, max_tokens: int | None = None) -> str:
-        kwargs = {
+        kwargs: dict[str, Any] = {
             "model": self.model_id,
             # Mandatory field on this API (unlike the other three providers) -- use the model's own
             # output ceiling rather than an arbitrary cap, so adaptive thinking is never starved of
@@ -118,8 +135,9 @@ class AnthropicClient(LLMClient):
             kwargs["output_config"] = {"effort": self.effort}
         resp = self._client.messages.create(**kwargs)
         if resp.stop_reason == "max_tokens":
-            raise TruncatedOutputError(f"Anthropic output truncated: stop_reason=max_tokens "
-                                        f"(model={self.model_id})")
+            raise TruncatedOutputError(
+                f"Anthropic output truncated: stop_reason=max_tokens " f"(model={self.model_id})"
+            )
         if not resp.content:
             return ""  # content-policy refusal; caller records parse_error=True
         # Adaptive thinking may return multiple content blocks (thinking + text); take the text one.
@@ -131,18 +149,23 @@ class AnthropicClient(LLMClient):
 
 # ── OpenAI (GPT-5) ───────────────────────────────────────────────────────────
 
+
 class OpenAIClient(LLMClient):
-    def __init__(self, model_id: str, temperature: float | None = None,
-                 reasoning_effort: str | None = None):
+    def __init__(
+        self, model_id: str, temperature: float | None = None, reasoning_effort: str | None = None
+    ):
         from openai import OpenAI
+
         self._client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
         self.model_id = model_id
-        self.temperature = temperature  # None => omit kwarg (base GPT-5 rejects explicit temperature)
+        self.temperature = (
+            temperature  # None => omit kwarg (base GPT-5 rejects explicit temperature)
+        )
         self.reasoning_effort = reasoning_effort
 
     @_with_retry()
     def generate_text(self, prompt: str, max_tokens: int | None = None) -> str:
-        kwargs = {
+        kwargs: dict[str, Any] = {
             "model": self.model_id,
             "messages": [{"role": "user", "content": prompt}],
             "timeout": REQUEST_TIMEOUT,
@@ -155,12 +178,14 @@ class OpenAIClient(LLMClient):
             kwargs["reasoning_effort"] = self.reasoning_effort
         resp = self._client.chat.completions.create(**kwargs)
         if resp.choices[0].finish_reason == "length":
-            raise TruncatedOutputError(f"OpenAI output truncated: finish_reason=length "
-                                        f"(model={self.model_id})")
+            raise TruncatedOutputError(
+                f"OpenAI output truncated: finish_reason=length " f"(model={self.model_id})"
+            )
         return (resp.choices[0].message.content or "").strip()
 
 
 # ── Groq (OpenAI-compatible; hosts the open-weight model) ────────────────────
+
 
 class GroqClient(LLMClient):
     """Fills the open-weight slot (Key decision #6). DeepSeek-V4-Pro was tried first but forces
@@ -172,18 +197,21 @@ class GroqClient(LLMClient):
     reasoning inline as a leading ``<think>...</think>`` block rather than a separate API field or a
     markdown fence -- agent_graph.py's ``parse_json_answers`` strips this before parsing."""
 
-    def __init__(self, model_id: str, temperature: float | None = None,
-                 reasoning_effort: str | None = None):
+    def __init__(
+        self, model_id: str, temperature: float | None = None, reasoning_effort: str | None = None
+    ):
         from openai import OpenAI
-        self._client = OpenAI(api_key=os.environ["GROQ_API_KEY"],
-                               base_url="https://api.groq.com/openai/v1")
+
+        self._client = OpenAI(
+            api_key=os.environ["GROQ_API_KEY"], base_url="https://api.groq.com/openai/v1"
+        )
         self.model_id = model_id
         self.temperature = temperature
         self.reasoning_effort = reasoning_effort
 
     @_with_retry()
     def generate_text(self, prompt: str, max_tokens: int | None = None) -> str:
-        kwargs = {
+        kwargs: dict[str, Any] = {
             "model": self.model_id,
             "messages": [{"role": "user", "content": prompt}],
             "timeout": REQUEST_TIMEOUT,
@@ -198,22 +226,27 @@ class GroqClient(LLMClient):
             kwargs["reasoning_effort"] = self.reasoning_effort
         resp = self._client.chat.completions.create(**kwargs)
         if resp.choices[0].finish_reason == "length":
-            raise TruncatedOutputError(f"Groq output truncated: finish_reason=length "
-                                        f"(model={self.model_id}) -- even at the platform's max "
-                                        f"per-call token ceiling; likely an outlier-sized document")
+            raise TruncatedOutputError(
+                f"Groq output truncated: finish_reason=length "
+                f"(model={self.model_id}) -- even at the platform's max "
+                f"per-call token ceiling; likely an outlier-sized document"
+            )
         return (resp.choices[0].message.content or "").strip()
 
 
 # ── Google (Gemini) ──────────────────────────────────────────────────────────
+
 
 class GoogleClient(LLMClient):
     """Uses the maintained ``google-genai`` SDK (``google.generativeai`` was sunset upstream and
     its GenerationConfig has no ``thinking_level`` field at all — confirmed by inspecting the
     installed package directly, not assumed)."""
 
-    def __init__(self, model_id: str, temperature: float | None = None,
-                 thinking_level: str | None = None):
+    def __init__(
+        self, model_id: str, temperature: float | None = None, thinking_level: str | None = None
+    ):
         from google import genai
+
         self._genai = genai
         self._client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
         self.model_id = model_id
@@ -223,24 +256,29 @@ class GoogleClient(LLMClient):
     @_with_retry()
     def generate_text(self, prompt: str, max_tokens: int | None = None) -> str:
         from google.genai import types
-        cfg_kwargs = {}
+
+        cfg_kwargs: dict[str, Any] = {}
         if max_tokens is not None:
             cfg_kwargs["max_output_tokens"] = max_tokens
         if self.temperature is not None:
             cfg_kwargs["temperature"] = self.temperature
         if self.thinking_level is not None:
-            cfg_kwargs["thinking_config"] = types.ThinkingConfig(thinking_level=self.thinking_level)
+            cfg_kwargs["thinking_config"] = types.ThinkingConfig(thinking_level=self.thinking_level)  # type: ignore[arg-type]
         cfg = types.GenerateContentConfig(**cfg_kwargs)
-        resp = self._client.models.generate_content(model=self.model_id, contents=prompt, config=cfg)
+        resp = self._client.models.generate_content(
+            model=self.model_id, contents=prompt, config=cfg
+        )
         if not resp.candidates:
             # e.g. a safety-filter block with no content at all -- fails the same way on every
             # retry, so raise a clear, non-retryable error rather than let `resp.text` throw its
             # own opaque SDK exception and burn through _with_retry's backoff for nothing.
-            raise EmptyResponseError(f"Gemini returned no candidates (model={self.model_id}), "
-                                      f"likely a safety block")
+            raise EmptyResponseError(
+                f"Gemini returned no candidates (model={self.model_id}), " f"likely a safety block"
+            )
         if resp.candidates[0].finish_reason == types.FinishReason.MAX_TOKENS:
-            raise TruncatedOutputError(f"Gemini output truncated: finish_reason=MAX_TOKENS "
-                                        f"(model={self.model_id})")
+            raise TruncatedOutputError(
+                f"Gemini output truncated: finish_reason=MAX_TOKENS " f"(model={self.model_id})"
+            )
         return (resp.text or "").strip()
 
 

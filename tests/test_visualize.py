@@ -10,19 +10,41 @@ from agentic_docs.visualize import (
 
 _SUMMARY = {
     "by_condition_model": {
-        "flat|m1": {"n": 10, "accuracy": 0.5, "exact_match_rate": 0.4, "hallucination_rate": 0.1,
-                    "omission_rate": 0.1, "misassociation_rate": 0.0},
-        "predicted_graph|m1": {"n": 10, "accuracy": 0.7, "exact_match_rate": 0.6,
-                                "hallucination_rate": 0.05, "omission_rate": 0.05,
-                                "misassociation_rate": 0.0},
+        "flat|m1": {
+            "n": 10,
+            "accuracy": 0.5,
+            "exact_match_rate": 0.4,
+            "hallucination_rate": 0.1,
+            "omission_rate": 0.1,
+            "misassociation_rate": 0.0,
+        },
+        "predicted_graph|m1": {
+            "n": 10,
+            "accuracy": 0.7,
+            "exact_match_rate": 0.6,
+            "hallucination_rate": 0.05,
+            "omission_rate": 0.05,
+            "misassociation_rate": 0.0,
+        },
     },
     "rq5_correction": {
         "flat|m1": {"correction_rate": 0.3, "regression_rate": 0.1, "net_correction": 2},
-        "predicted_graph|m1": {"correction_rate": 0.5, "regression_rate": 0.05, "net_correction": 4},
+        "predicted_graph|m1": {
+            "correction_rate": 0.5,
+            "regression_rate": 0.05,
+            "net_correction": 4,
+        },
     },
     "rq2_headline_predicted_vs_flat": {
-        "m1": {"point_estimate_a": 0.7, "point_estimate_b": 0.5, "point_delta": 0.2,
-               "ci_low": 0.05, "ci_high": 0.35, "n_documents": 10, "n_boot": 1000},
+        "m1": {
+            "point_estimate_a": 0.7,
+            "point_estimate_b": 0.5,
+            "point_delta": 0.2,
+            "ci_low": 0.05,
+            "ci_high": 0.35,
+            "n_documents": 10,
+            "n_boot": 1000,
+        },
     },
 }
 

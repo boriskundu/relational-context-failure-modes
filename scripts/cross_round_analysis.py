@@ -15,7 +15,7 @@ with few were being weighted equally instead of by their actual question count),
 match.
 
 Ad hoc script, not a permanent CLI capability. Run with:
-    .venv/Scripts/python scripts/cross_round_analysis.py
+    python scripts/cross_round_analysis.py
 """
 import json
 

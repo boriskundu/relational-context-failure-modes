@@ -4,6 +4,7 @@ Turns an analyze.py summary JSON into figures + a flat CSV table for the paper.
 Pure functions over the summary dict (no I/O beyond writing the requested output path) so they're
 offline-testable against a hand-built summary — never regenerate a summary by re-running the grid.
 """
+
 import argparse
 import csv
 import json
@@ -21,7 +22,9 @@ CONDITION_ORDER = CONDITIONS  # raw, flat, predicted_graph, oracle_graph, shuffl
 
 
 def _condition_model_pairs(by_condition_model: dict) -> tuple[list[str], list[str]]:
-    conditions = [c for c in CONDITION_ORDER if any(k.startswith(f"{c}|") for k in by_condition_model)]
+    conditions = [
+        c for c in CONDITION_ORDER if any(k.startswith(f"{c}|") for k in by_condition_model)
+    ]
     models = sorted({k.split("|", 1)[1] for k in by_condition_model})
     return conditions, models
 
@@ -74,8 +77,20 @@ def plot_rq5_correction_regression(summary: dict, out_path: Path) -> Path:
     fig, ax = plt.subplots(figsize=(max(6, len(conditions) * 1.6), 5))
     x = range(len(conditions))
     width = 0.35
-    ax.bar([xi - width / 2 for xi in x], correction, width=width, label="Correction rate", color="tab:green")
-    ax.bar([xi + width / 2 for xi in x], regression, width=width, label="Regression rate", color="tab:red")
+    ax.bar(
+        [xi - width / 2 for xi in x],
+        correction,
+        width=width,
+        label="Correction rate",
+        color="tab:green",
+    )
+    ax.bar(
+        [xi + width / 2 for xi in x],
+        regression,
+        width=width,
+        label="Regression rate",
+        color="tab:red",
+    )
     ax.set_xticks(list(x))
     ax.set_xticklabels(conditions, rotation=20, ha="right")
     ax.set_ylabel("Rate (mean across models)")
@@ -98,8 +113,14 @@ def plot_rq2_headline_bootstrap(summary: dict, out_path: Path) -> Path:
 
     fig, ax = plt.subplots(figsize=(max(6, len(models) * 1.8), 5.5))
     deltas = [rq2[m]["point_delta"] for m in models]
-    lo_err = [rq2[m]["point_delta"] - rq2[m]["ci_low"] if rq2[m]["ci_low"] is not None else 0 for m in models]
-    hi_err = [rq2[m]["ci_high"] - rq2[m]["point_delta"] if rq2[m]["ci_high"] is not None else 0 for m in models]
+    lo_err = [
+        rq2[m]["point_delta"] - rq2[m]["ci_low"] if rq2[m]["ci_low"] is not None else 0
+        for m in models
+    ]
+    hi_err = [
+        rq2[m]["ci_high"] - rq2[m]["point_delta"] if rq2[m]["ci_high"] is not None else 0
+        for m in models
+    ]
     ax.bar(models, deltas, yerr=[lo_err, hi_err], capsize=5, color="tab:blue")
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_ylabel("Accuracy delta (Predicted Graph - Flat)")
@@ -122,24 +143,45 @@ def export_summary_csv(summary: dict, out_path: Path) -> Path:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow([
-            "condition", "model", "n", "accuracy", "exact_match_rate", "hallucination_rate",
-            "omission_rate", "misassociation_rate", "n_relation_following_applicable",
-            "relation_following_error_rate", "correction_rate", "regression_rate",
-            "net_correction",
-        ])
+        writer.writerow(
+            [
+                "condition",
+                "model",
+                "n",
+                "accuracy",
+                "exact_match_rate",
+                "hallucination_rate",
+                "omission_rate",
+                "misassociation_rate",
+                "n_relation_following_applicable",
+                "relation_following_error_rate",
+                "correction_rate",
+                "regression_rate",
+                "net_correction",
+            ]
+        )
         for cond in conditions:
             for model in models:
                 key = f"{cond}|{model}"
                 agg = by_condition_model.get(key, {})
                 corr = rq5.get(key, {})
-                writer.writerow([
-                    cond, model, agg.get("n"), agg.get("accuracy"), agg.get("exact_match_rate"),
-                    agg.get("hallucination_rate"), agg.get("omission_rate"),
-                    agg.get("misassociation_rate"), agg.get("n_relation_following_applicable"),
-                    agg.get("relation_following_error_rate"), corr.get("correction_rate"),
-                    corr.get("regression_rate"), corr.get("net_correction"),
-                ])
+                writer.writerow(
+                    [
+                        cond,
+                        model,
+                        agg.get("n"),
+                        agg.get("accuracy"),
+                        agg.get("exact_match_rate"),
+                        agg.get("hallucination_rate"),
+                        agg.get("omission_rate"),
+                        agg.get("misassociation_rate"),
+                        agg.get("n_relation_following_applicable"),
+                        agg.get("relation_following_error_rate"),
+                        corr.get("correction_rate"),
+                        corr.get("regression_rate"),
+                        corr.get("net_correction"),
+                    ]
+                )
     return out_path
 
 
@@ -155,7 +197,9 @@ def generate_all(summary: dict, out_dir: Path) -> list[Path]:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="docs visualize")
     parser.add_argument("--summary", default=None, help="Path to summary.json (default inferred)")
-    parser.add_argument("--out", default=None, help="Output directory (default: results/analysis/figures)")
+    parser.add_argument(
+        "--out", default=None, help="Output directory (default: results/analysis/figures)"
+    )
     args = parser.parse_args(argv)
 
     summary_path = Path(args.summary) if args.summary else ANALYSIS_DIR / "summary.json"

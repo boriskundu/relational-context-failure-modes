@@ -13,10 +13,9 @@ drawn in round 1, so the two rounds never overlap). Each round mixes:
 - 10 **boundary** items, randomly drawn from scores with `fuzzy_score` in [70, 95], the region
   around the threshold most likely to expose scorer problems.
 
-Every item was reviewed against the scorer's MATCH/NO_MATCH verdict. See
-`manual_validation_sample.csv` (round 1) and `manual_validation_sample_round2.csv` (round 2) for
-the full per-item record, including question text, predicted answer, gold answer, fuzzy score,
-scorer verdict, human verdict, and a note wherever the two rounds disagreed or a caveat applied.
+Every item was reviewed against the scorer's MATCH/NO_MATCH verdict. The per-item records
+(question text, predicted answer, gold answer, fuzzy score, scorer verdict, human verdict) contain
+FUNSD text and model outputs, so they are not released; the numbers below summarize them.
 
 ## Result
 
@@ -30,8 +29,7 @@ independent sampled items:
    where the predicted answer contained the exact same values as gold with one or two adjacent
    items transposed, and was still scored NO_MATCH. This is now a confirmed, reproducible pattern
    rather than a single outlier, and is written up as a Limitation with a suggested fix (a
-   token-multiset comparison for list-type fields) rather than something patched under deadline
-   pressure.
+   token-multiset comparison for list-type fields) rather than something patched after the fact.
 2. **Gold-data artifacts.** A handful of gold answers are themselves incomplete or contain
    placeholder text rather than a real value: an instruction placeholder `"(check one)"` used as
    the gold answer for two checkbox questions in the same document (round 1, #16/#26), a

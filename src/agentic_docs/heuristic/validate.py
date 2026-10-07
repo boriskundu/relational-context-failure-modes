@@ -4,6 +4,7 @@ of the combined document dataset (no separate frozen test set in this project â€
 config.DOCUMENTS_PATH). Reports micro-averaged precision/recall/F1 across the holdout, since entity
 ids are only unique within a document (per-document overlaps are summed before dividing).
 """
+
 import random
 from dataclasses import dataclass
 
@@ -23,9 +24,11 @@ class HeuristicValidationResult:
     f1: float
 
 
-def select_holdout(documents: list[DocumentRecord],
-                    holdout_size: int = HEURISTIC_HOLDOUT_SIZE,
-                    seed: int = RANDOM_SEED) -> list[DocumentRecord]:
+def select_holdout(
+    documents: list[DocumentRecord],
+    holdout_size: int = HEURISTIC_HOLDOUT_SIZE,
+    seed: int = RANDOM_SEED,
+) -> list[DocumentRecord]:
     """A fixed, reproducible subset of the combined document dataset, used only to validate the
     heuristic (never fed to the model-comparison grid)."""
     rng = random.Random(seed)

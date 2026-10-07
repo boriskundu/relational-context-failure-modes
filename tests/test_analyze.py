@@ -17,8 +17,15 @@ def _tiny_doc(doc_id: str) -> DocumentRecord:
         entities=entities,
         links=[(0, 1), (2, 3)],
         scorable_pairs=[
-            ScorablePair(question_id=0, question_text="Name:", answer_entity_ids=(1,), gold_answer_text="Bob"),
-            ScorablePair(question_id=2, question_text="Date:", answer_entity_ids=(3,), gold_answer_text="1999"),
+            ScorablePair(
+                question_id=0, question_text="Name:", answer_entity_ids=(1,), gold_answer_text="Bob"
+            ),
+            ScorablePair(
+                question_id=2,
+                question_text="Date:",
+                answer_entity_ids=(3,),
+                gold_answer_text="1999",
+            ),
         ],
     )
 
@@ -32,8 +39,12 @@ class ScriptedClient:
     def generate_text(self, prompt: str, max_tokens=None) -> str:
         self.call_count += 1
         if self.call_count == 1:  # extract
-            return json.dumps([{"question": "Name:", "answer": "Bob"}, {"question": "Date:", "answer": "1990"}])
-        return json.dumps([{"question": "Name:", "answer": "Bob"}, {"question": "Date:", "answer": "1999"}])
+            return json.dumps(
+                [{"question": "Name:", "answer": "Bob"}, {"question": "Date:", "answer": "1990"}]
+            )
+        return json.dumps(
+            [{"question": "Name:", "answer": "Bob"}, {"question": "Date:", "answer": "1999"}]
+        )
 
 
 class ReformattedKeyClient:
@@ -41,7 +52,9 @@ class ReformattedKeyClient:
     gold — regression test for the exact-string-match join bug found in the live sanity check."""
 
     def generate_text(self, prompt: str, max_tokens=None) -> str:
-        return json.dumps([{"question": "Name", "answer": "Bob"}, {"question": "Date", "answer": "1999"}])
+        return json.dumps(
+            [{"question": "Name", "answer": "Bob"}, {"question": "Date", "answer": "1999"}]
+        )
 
 
 class VerifyFailsClient:
@@ -53,7 +66,9 @@ class VerifyFailsClient:
     def generate_text(self, prompt: str, max_tokens=None) -> str:
         self.call_count += 1
         if self.call_count % 2 == 1:  # extract call
-            return json.dumps([{"question": "Name:", "answer": "Bob"}, {"question": "Date:", "answer": "1999"}])
+            return json.dumps(
+                [{"question": "Name:", "answer": "Bob"}, {"question": "Date:", "answer": "1999"}]
+            )
         return "not valid json"  # verify call
 
 
@@ -62,7 +77,9 @@ class BlindRelayClient:
     agent naively relaying a swapped/wrong graph edge rather than reasoning about content."""
 
     def generate_text(self, prompt: str, max_tokens=None) -> str:
-        return json.dumps([{"question": "Name:", "answer": "1999"}, {"question": "Date:", "answer": "Bob"}])
+        return json.dumps(
+            [{"question": "Name:", "answer": "1999"}, {"question": "Date:", "answer": "Bob"}]
+        )
 
 
 def test_relation_following_error_flagged_for_shuffled_graph_blind_relay(tmp_path):
@@ -71,8 +88,9 @@ def test_relation_following_error_flagged_for_shuffled_graph_blind_relay(tmp_pat
     # gold), Date's becomes "Bob" (Name's gold) -- deterministic regardless of seed.
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    merged = run_grid(["m1"], docs, ["shuffled_graph"], out_path,
-                       client_factory=lambda name: BlindRelayClient())
+    merged = run_grid(
+        ["m1"], docs, ["shuffled_graph"], out_path, client_factory=lambda name: BlindRelayClient()
+    )
 
     _, final_scores = score_run(merged, docs)
     assert len(final_scores) == 2
@@ -85,8 +103,9 @@ def test_relation_following_error_always_none_for_oracle_graph(tmp_path):
     # Oracle's edges are never wrong by construction -- nothing to blindly follow either way.
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    merged = run_grid(["m1"], docs, ["oracle_graph"], out_path,
-                       client_factory=lambda name: ScriptedClient())
+    merged = run_grid(
+        ["m1"], docs, ["oracle_graph"], out_path, client_factory=lambda name: ScriptedClient()
+    )
 
     _, final_scores = score_run(merged, docs)
     assert len(final_scores) == 2
@@ -100,7 +119,9 @@ def test_verify_stage_failure_does_not_discard_extract_stage_data(tmp_path):
     # including the RQ2 headline bootstrap and RQ5 correction/regression, on any verify-stage hiccup.
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    merged = run_grid(["m1"], docs, ["flat"], out_path, client_factory=lambda name: VerifyFailsClient())
+    merged = run_grid(
+        ["m1"], docs, ["flat"], out_path, client_factory=lambda name: VerifyFailsClient()
+    )
 
     row = next(iter(merged.values()))
     assert row["extract_parse_error"] is False
@@ -110,13 +131,17 @@ def test_verify_stage_failure_does_not_discard_extract_stage_data(tmp_path):
     assert len(initial_scores) == 2  # NOT dropped
     assert len(final_scores) == 2
     assert all(s.fuzzy_match for s in initial_scores)
-    assert all(s.fuzzy_match for s in final_scores)  # final falls back to the correct initial answers
+    assert all(
+        s.fuzzy_match for s in final_scores
+    )  # final falls back to the correct initial answers
 
 
 def test_score_run_matches_reformatted_question_text(tmp_path):
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    merged = run_grid(["m1"], docs, ["flat"], out_path, client_factory=lambda name: ReformattedKeyClient())
+    merged = run_grid(
+        ["m1"], docs, ["flat"], out_path, client_factory=lambda name: ReformattedKeyClient()
+    )
 
     initial_scores, _ = score_run(merged, docs)
     # Gold question_text is "Name:"/"Date:"; the model dropped the trailing colon on both. A naive
@@ -128,7 +153,9 @@ def test_score_run_matches_reformatted_question_text(tmp_path):
 def test_end_to_end_runner_to_analyze_join(tmp_path):
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    merged = run_grid(["m1"], docs, ["flat"], out_path, client_factory=lambda name: ScriptedClient())
+    merged = run_grid(
+        ["m1"], docs, ["flat"], out_path, client_factory=lambda name: ScriptedClient()
+    )
 
     initial_scores, final_scores = score_run(merged, docs)
     # 1 doc x 2 scorable questions = 2 scores per stage
@@ -138,7 +165,7 @@ def test_end_to_end_runner_to_analyze_join(tmp_path):
     date_initial = next(s for s in initial_scores if s.question_id == 2)
     date_final = next(s for s in final_scores if s.question_id == 2)
     assert date_initial.fuzzy_match is False  # "1990" vs gold "1999"
-    assert date_final.fuzzy_match is True     # verify corrected it to "1999"
+    assert date_final.fuzzy_match is True  # verify corrected it to "1999"
 
     summary = build_summary(initial_scores, final_scores)
     assert summary["by_condition_model"]["flat|m1"]["n"] == 2

@@ -1,11 +1,12 @@
-"""One-off consolidation script for the paper rewrite (2026-09-03), per the two external reviewers'
-"Phase 1 -- Analysis cleanup" lists. Computes every NEW number the rewrite needs that isn't already
-sitting in a summary*.json, from already-collected data only (zero new API calls):
+"""Consolidation script for the paper's additional analyses. Computes every number that isn't
+already in a summary*.json, from already-collected data only (zero new API calls). Needs the
+per-question outputs from a run, which are not released; the results are in
+results/analysis/final_paper_numbers.json:
 
 1. RQ1 (Raw vs Flat) headline bootstrap, Run2 only, at n_boot=20000 with Bonferroni n=4 -- no stored
    field exists for this pair (build_summary only computes predicted/oracle/shuffled-vs-flat).
 2. RQ3b (Oracle vs Flat) headline bootstrap, Run3 only -- same reason, a new pairwise contrast.
-3. Document-bootstrap CIs on (Heuristic_final - Flat) within each of the three ID-based buckets
+3. Document-bootstrap CIs on (Heuristic_final - Flat) within each of the three buckets
    (edge_correct / edge_wrong / no_edge), per model, from the already-saved
    results/analysis/run3_bucket_diagnostic.json per-question records.
 4. Heuristic's (predicted_graph) own wrong-edge-consistency (relation_following_error_rate)
@@ -13,13 +14,13 @@ sitting in a summary*.json, from already-collected data only (zero new API calls
    recomputed (aggregate() already stores it).
 5. Heuristic F1 on the 35-doc validation holdout AND its 164-doc complement, to show it isn't
    overfit to the small holdout it was originally checked against.
-6. GPT-5-vs-other-model interaction contrasts (2026-09-03 review round): a formal
+6. GPT-5-vs-other-model interaction contrasts: a formal
    difference-in-differences test of whether GPT-5's own Heuristic-Flat/Deranged-Flat delta is
    itself different from each other model's same delta, not just individually significant against
    zero -- the actual statistical test the "GPT-5 is uniquely robust" claim needs.
 
 Ad hoc script, not a permanent CLI capability, same pattern as run3_bucket_diagnostic.py. Run with:
-    .venv/Scripts/python scripts/final_paper_numbers.py
+    python scripts/final_paper_numbers.py
 """
 import json
 import random
@@ -89,7 +90,7 @@ def rq3b_oracle_vs_flat():
 
 
 def bucket_cis():
-    """Document-bootstrap CI on (Heuristic_final - Flat) within each ID-based bucket, per model,
+    """Document-bootstrap CI on (Heuristic_final - Flat) within each bucket, per model,
     from the already-saved per-question bucket records. Same resampling unit (document) and same
     seed/n_boot as every other headline in this project, just applied to a filtered subset."""
     raw = json.load(open(BUCKET_PATH, encoding="utf-8"))
@@ -166,7 +167,7 @@ def gpt5_interaction_contrasts():
 
 
 def coverage_correctness_table(bucket_summary_result, f1_result):
-    """Assemble the coverage/correctness reframe table (2026-09-03 review round): Flat, Heuristic,
+    """Assemble the coverage/correctness reframe table Flat, Heuristic,
     Oracle, and Deranged span two conflated factors -- how much of the question set gets an edge at
     all (coverage), and how often that edge is right (correctness) -- entirely from numbers already
     computed above/elsewhere in the paper, never a new experiment. Deranged's own near-zero

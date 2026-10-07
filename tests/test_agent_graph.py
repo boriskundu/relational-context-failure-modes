@@ -46,10 +46,12 @@ def test_parse_json_answers_strips_leading_think_block():
 
 
 def test_extract_then_verify_wiring_calls_model_twice():
-    client = FakeLLMClient([
-        _json_list({"Name": "wrong guess"}),
-        _json_list({"Name": "corrected"}),
-    ])
+    client = FakeLLMClient(
+        [
+            _json_list({"Name": "wrong guess"}),
+            _json_list({"Name": "corrected"}),
+        ]
+    )
     row = run_cell(client, "flat", "some document")
     assert len(client.calls) == 2
     assert row["initial_answers"] == {"Name": "wrong guess"}
@@ -57,20 +59,24 @@ def test_extract_then_verify_wiring_calls_model_twice():
 
 
 def test_verify_node_correction_overrides_extract_output():
-    client = FakeLLMClient([
-        _json_list({"Date": "1990"}),
-        _json_list({"Date": "1999"}),
-    ])
+    client = FakeLLMClient(
+        [
+            _json_list({"Date": "1990"}),
+            _json_list({"Date": "1999"}),
+        ]
+    )
     row = run_cell(client, "raw", "doc")
     assert row["verify_changed"] == ["Date"]
     assert row["final_answers"]["Date"] == "1999"
 
 
 def test_unchanged_answers_are_not_flagged_as_verify_changed():
-    client = FakeLLMClient([
-        _json_list({"Date": "1999", "Name": "Bob"}),
-        _json_list({"Date": "1999", "Name": "Bob"}),
-    ])
+    client = FakeLLMClient(
+        [
+            _json_list({"Date": "1999", "Name": "Bob"}),
+            _json_list({"Date": "1999", "Name": "Bob"}),
+        ]
+    )
     row = run_cell(client, "raw", "doc")
     assert row["verify_changed"] == []
 
@@ -88,10 +94,12 @@ def test_extract_parse_error_short_circuits_without_crashing():
 
 
 def test_verify_parse_error_falls_back_to_initial_answers_and_is_still_scorable():
-    client = FakeLLMClient([
-        _json_list({"Name": "Alice"}),
-        "garbage, not json",
-    ])
+    client = FakeLLMClient(
+        [
+            _json_list({"Name": "Alice"}),
+            "garbage, not json",
+        ]
+    )
     row = run_cell(client, "raw", "doc")
     # Extract succeeded -- this cell must NOT be treated as "nothing usable" (that's what
     # previously caused analyze.py to silently drop perfectly good extract-stage data whenever

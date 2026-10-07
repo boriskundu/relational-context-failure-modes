@@ -6,6 +6,7 @@ data/documents_all.json (199 docs -- FUNSD's own 149 train + 50 test, merged int
 Marked for real-network use only (@pytest.mark.real equivalent — not covered by offline tests).
 Run once; the resulting JSON file is what everything else in this package reads from.
 """
+
 import argparse
 import json
 import urllib.request
@@ -54,7 +55,9 @@ def build_document_dataset() -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Download FUNSD and build the combined document dataset")
+    parser = argparse.ArgumentParser(
+        description="Download FUNSD and build the combined document dataset"
+    )
     parser.add_argument("--force", action="store_true", help="Re-download even if already present")
     args = parser.parse_args(argv)
     download_and_extract(force=args.force)

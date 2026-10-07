@@ -8,6 +8,7 @@ this parser needs to handle correctly:
   - a question with one linked answer (id 3 -> 12)
   - a question with TWO linked answer entities (id 20 -> 21, 22) -> concatenated in reading order
 """
+
 from agentic_docs.funsd.parse import parse_document
 
 EXPECTED_SCORABLE_QUESTION_IDS = {2, 3, 10, 13, 15, 17, 20}

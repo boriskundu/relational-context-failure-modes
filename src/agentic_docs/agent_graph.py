@@ -7,6 +7,7 @@ for flow control, consistent with llm_clients.py's deliberately lightweight, non
 Both the extract node's output and the verify node's output are retained in the result — RQ5
 (correction rate, regression rate, net correction) scores both, not just the final answer.
 """
+
 import json
 import re
 from typing import Any, TypedDict
@@ -96,14 +97,16 @@ def build_agent(client: LLMClient):
 def run_cell(client: LLMClient, condition: str, document_repr: Any) -> dict:
     """Run one (document, condition) cell against ``client`` and return a scoring-ready row."""
     app = build_agent(client)
-    result = app.invoke({
-        "condition": condition,
-        "document_repr": document_repr,
-        "initial_answers": {},
-        "final_answers": {},
-        "extract_parse_error": False,
-        "verify_parse_error": False,
-    })
+    result = app.invoke(
+        {
+            "condition": condition,
+            "document_repr": document_repr,
+            "initial_answers": {},
+            "final_answers": {},
+            "extract_parse_error": False,
+            "verify_parse_error": False,
+        }
+    )
     initial = result["initial_answers"]
     final = result["final_answers"]
     verify_changed = sorted(q for q in final if final.get(q) != initial.get(q))

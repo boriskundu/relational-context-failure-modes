@@ -1,12 +1,11 @@
-"""Same ID-based bucket diagnostic as run3_bucket_diagnostic.py, re-run against Round 2's raw
-extraction (results/extractions/run_condition_blind.json) instead of Round 3 -- needed for the
-Round2-vs-Round3 no-edge blank-penalty and cross-round misassociation analyses requested in the
-2026-09-03 review round (Section 4.4). Round 1 is deliberately excluded from this specific
+"""Same bucket diagnostic as run3_bucket_diagnostic.py, re-run against Round 2's raw extraction
+(results/extractions/run_condition_blind.json) instead of Round 3 -- needed for the Round2-vs-Round3
+no-edge blank-penalty and cross-round misassociation analyses (paper Section 4.4). Round 1 is deliberately excluded from this specific
 comparison: its per-condition prompts weren't condition-invariant, the same reasoning the paper
 already uses to exclude Round 1 from RQ2/RQ4.
 
 Ad hoc script, not a permanent CLI capability. Run with:
-    .venv/Scripts/python scripts/round2_bucket_diagnostic.py
+    python scripts/round2_bucket_diagnostic.py
 """
 import json
 

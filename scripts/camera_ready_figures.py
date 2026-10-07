@@ -1,8 +1,9 @@
 """Camera-ready version of the failure-mode figure, split into two panels.
 
-Reviewer feedback: the single-panel figure mixes a gain (correct edge) with two losses (wrong edge,
-no edge) on one axis, which is hard to read. This draws the same numbers, from the same analysis
-JSON, as two panels with their own y-scales. No new analysis.
+Figure 2 (failure-mode decomposition): the Heuristic-minus-Flat accuracy delta per edge bucket, as
+two panels with their own y-scales (a gain for correct edges, losses for wrong and absent edges).
+Figure 3 (prompt sensitivity): wrong-edge-consistency rate across the three prompt rounds. Both
+are drawn from the released analysis JSON; no new analysis.
 
 Run with: python scripts/camera_ready_figures.py [output_dir]
 """

@@ -1,4 +1,5 @@
 """Thin CLI dispatcher — each subcommand's module owns its own argparse parser."""
+
 import argparse
 import sys
 
@@ -19,6 +20,7 @@ def main(argv: list[str] | None = None) -> None:
         return
     command, rest = argv[0], argv[1:]
     import importlib
+
     module = importlib.import_module(_COMMANDS[command])
     module.main(rest)
 

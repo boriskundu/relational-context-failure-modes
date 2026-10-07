@@ -8,6 +8,7 @@ Reframed explicitly per Key decision #1/RQ3: this tests FAITHFUL RELAY under com
 reasoning helps" — an agent handed the exact answer mapping isn't reasoning about anything. State
 this in the paper's Method and Limitations, not just here.
 """
+
 from agentic_docs.funsd.parse import DocumentRecord
 from agentic_docs.representations._common import build_graph_shape, scorable_edges
 

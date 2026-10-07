@@ -20,6 +20,7 @@ instruction.
 Exact model_id strings and provider-specific reasoning/thinking kwargs below were verified live
 against each provider's actual API (not just docs) before use.
 """
+
 from pathlib import Path
 from typing import Any
 
@@ -52,14 +53,14 @@ DOCUMENTS_PATH = DATA_DIR / "documents_all.json"
 # rejected outright).
 ANTHROPIC_MAX_OUTPUT_TOKENS = 128_000
 GROQ_MAX_OUTPUT_TOKENS = 16_384
-RANDOM_SEED = 42           # heuristic tie-breaking, derangement, bootstrap resampling
+RANDOM_SEED = 42  # heuristic tie-breaking, derangement, bootstrap resampling
 
-REQUEST_TIMEOUT = 600     # generous: unbounded adaptive thinking on large documents can run minutes
+REQUEST_TIMEOUT = 600  # generous: unbounded adaptive thinking on large documents can run minutes
 RUN_MAX_RETRIES = 5
 RUN_BASE_DELAY = 3.0
 RATE_LIMIT_MIN_WAIT = 20.0
-CHECKPOINT_EVERY = 5      # partial file (and --status visibility) refreshes at least this often
-HEARTBEAT_EVERY = 1       # print a progress line to stdout after every N completed cells
+CHECKPOINT_EVERY = 5  # partial file (and --status visibility) refreshes at least this often
+HEARTBEAT_EVERY = 1  # print a progress line to stdout after every N completed cells
 
 # Heuristic validation: internal holdout size carved out of the combined 199-document dataset
 # (superseded Key decision #2's train/test carve-out, now that there's no separate frozen test set).

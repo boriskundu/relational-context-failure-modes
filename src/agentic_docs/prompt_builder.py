@@ -4,6 +4,7 @@ engine, deliberately, so a diff between two rendered prompts is trivially readab
 verify/revise prompt (re-uses each condition's own input-specific description, so the verify step
 still describes the document the same way the extract step did).
 """
+
 import json
 from typing import Any
 

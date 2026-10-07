@@ -1,5 +1,5 @@
-"""No-edge blank-penalty and edge-wrong misassociation deltas, Round 2 vs Round 3 (2026-09-03 review
-round, Section 4.4). Both reuse the ID-based bucket diagnostics already written to disk
+"""No-edge blank-penalty and edge-wrong misassociation deltas, Round 2 vs Round 3
+(paper Section 4.4). Both reuse the bucket diagnostics already written to disk
 (round2_bucket_diagnostic.json / run3_bucket_diagnostic.json -- run round2_bucket_diagnostic.py and
 run3_bucket_diagnostic.py first) rather than re-deriving bucket membership a second time.
 
@@ -22,7 +22,7 @@ Round 1 is excluded -- its per-condition prompts weren't condition-invariant, sa
 used to exclude Round 1 from RQ2/RQ4 elsewhere in the paper.
 
 Ad hoc script, not a permanent CLI capability. Run with:
-    .venv/Scripts/python scripts/round_sensitivity_analysis.py
+    python scripts/round_sensitivity_analysis.py
 """
 import json
 

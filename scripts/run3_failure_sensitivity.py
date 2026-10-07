@@ -1,9 +1,9 @@
-"""Worst-case sensitivity check for Run3's 4 persistent parse-error cells (per the locked review
-plan, 2026-09-03): does treating each failed (doc, condition, model) cell as 100% wrong instead of
+"""Worst-case sensitivity check for Run3's 4 persistent parse-error cells (see Limitations):
+does treating each failed (doc, condition, model) cell as 100% wrong instead of
 excluding the document from that comparison change the RQ2/RQ4 headline deltas meaningfully?
 
 Ad hoc script, not a permanent CLI capability. Run with:
-    .venv/Scripts/python scripts/run3_failure_sensitivity.py
+    python scripts/run3_failure_sensitivity.py
 """
 import json
 

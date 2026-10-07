@@ -7,6 +7,7 @@ retrying only failed ones.
 ``client_factory`` is injectable so tests can run the whole grid against a fake client with zero
 network access.
 """
+
 import json
 import os
 import time
@@ -33,7 +34,8 @@ def cell_key(document_id: str, condition: str, model: str) -> str:
 
 def build_representation(condition: str, doc: DocumentRecord) -> tuple[object, set[int]]:
     """Returns (representation, excluded_question_ids) — the latter is only non-empty for
-    shuffled_graph (Key decision #3's degree-preserving exclusion), empty for every other condition."""
+    shuffled_graph (Key decision #3's degree-preserving exclusion), empty for every other condition.
+    """
     if condition == "raw":
         return build_raw(doc), set()
     if condition == "flat":
@@ -76,7 +78,7 @@ def _save_partial(path: Path, rows: dict) -> None:
         except PermissionError:
             if attempt == 4:
                 raise
-            time.sleep(0.2 * (2 ** attempt))
+            time.sleep(0.2 * (2**attempt))
 
 
 def _needs_retry(row: dict) -> bool:
@@ -141,8 +143,9 @@ def run_model(
     return rows
 
 
-def status(models: list[str], documents: list[DocumentRecord], conditions: list[str],
-           out_path: Path) -> dict:
+def status(
+    models: list[str], documents: list[DocumentRecord], conditions: list[str], out_path: Path
+) -> dict:
     """Report progress from existing partials only — no API calls.
 
     ``done`` means "a resume run will leave this cell alone" -- i.e. matches ``_needs_retry``'s own
@@ -159,10 +162,14 @@ def status(models: list[str], documents: list[DocumentRecord], conditions: list[
         rows = _load_partial(partial_path)
         done = sum(1 for r in rows.values() if not _needs_retry(r))
         failed = sum(1 for r in rows.values() if r.get("parse_error"))
-        verify_failed = sum(1 for r in rows.values()
-                             if not r.get("parse_error") and r.get("verify_parse_error"))
+        verify_failed = sum(
+            1 for r in rows.values() if not r.get("parse_error") and r.get("verify_parse_error")
+        )
         report[model_name] = {
-            "done": done, "failed": failed, "verify_failed": verify_failed, "total": total_per_model,
+            "done": done,
+            "failed": failed,
+            "verify_failed": verify_failed,
+            "total": total_per_model,
         }
     return report
 
@@ -195,15 +202,22 @@ def run_grid(
                 model_name = futures[future]
                 try:
                     merged.update(future.result())
-                except Exception as exc:  # noqa: BLE001 -- isolate one model's failure from the rest
+                # isolate one model's failure from the rest
+                except Exception as exc:  # noqa: BLE001
                     failed_models[model_name] = f"{type(exc).__name__}: {exc}"
-                    print(f"[error] model '{model_name}' failed and is excluded from this merge: "
-                          f"{failed_models[model_name]}", flush=True)
+                    print(
+                        f"[error] model '{model_name}' failed and is excluded from this merge: "
+                        f"{failed_models[model_name]}",
+                        flush=True,
+                    )
     except KeyboardInterrupt:
         print("Interrupted -- partials are checkpointed, re-run to resume.")
         raise
     _save_partial(out_path, merged)
     if failed_models:
-        print(f"[warn] {len(failed_models)}/{len(models)} model(s) missing from {out_path}: "
-              f"{sorted(failed_models)} -- fix and re-run to resume just those models.", flush=True)
+        print(
+            f"[warn] {len(failed_models)}/{len(models)} model(s) missing from {out_path}: "
+            f"{sorted(failed_models)} -- fix and re-run to resume just those models.",
+            flush=True,
+        )
     return merged

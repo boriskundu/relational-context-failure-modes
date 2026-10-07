@@ -25,6 +25,9 @@ structural context, never scored targets.
 
 ## The five conditions
 
+The code's names for Heuristic and Deranged are Predicted Graph (`predicted_graph`) and Shuffled
+Graph (`shuffled_graph`); this document uses the code names.
+
 | Condition | Entity text | Type labels | Bounding boxes | Relations |
 |---|---|---|---|---|
 | Raw | ✓ | ✗ | ✗ | ✗ |

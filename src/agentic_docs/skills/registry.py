@@ -4,6 +4,7 @@ Maps each representation condition to its skill/prompt template. The three graph
 input (entities + links), differing only in which edges are attached, so the model must never be
 able to tell which condition it's in from the prompt wording, only from the data.
 """
+
 import importlib.resources
 
 SKILL_FOR_CONDITION = {

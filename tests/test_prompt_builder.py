@@ -3,6 +3,7 @@ The "same prompt template, only representation varies" guarantee — the core sc
 this project depends on. If this test ever fails, the experiment's central comparison is no
 longer valid.
 """
+
 from agentic_docs.prompt_builder import _extract_input_specific, build_prompt, build_verify_prompt
 from agentic_docs.skills.registry import get_skill_for_condition
 
@@ -12,7 +13,7 @@ END = "<!-- INPUT-SPECIFIC:END -->"
 
 def _outside_block(skill_text: str) -> tuple[str, str]:
     before = skill_text[: skill_text.index(BEGIN)]
-    after = skill_text[skill_text.index(END) + len(END):]
+    after = skill_text[skill_text.index(END) + len(END) :]
     return before, after
 
 
@@ -21,7 +22,7 @@ def test_raw_flat_and_graph_skills_are_fully_condition_blind():
     The old per-condition wording -- describing each representation's structure, and for graph
     conditions specifically warning the model that links "may contain errors" -- gave the model a
     wording-based signal about which condition it was in, on top of the representation content
-    itself. That confounded RQ2/RQ4/RQ5: flat/raw never carried an analogous distrust instruction.
+    itself. That confounded the comparisons: flat/raw never carried an analogous distrust instruction.
     Instruction text is now identical across all five conditions (raw/flat/predicted/oracle/
     shuffled) -- the ONLY thing that may differ between conditions is the substituted
     `{document_representation}` content itself."""
@@ -92,9 +93,20 @@ def test_build_verify_prompt_includes_previous_answers_and_document():
 # A clean grep is an implementation safeguard, not proof the prompt is neutral -- it only rules out
 # this specific word list, not every way wording could carry a signal.
 _BANNED_WORDS = [
-    "correct", "incorrect", "reliable", "unreliable", "candidate", "proposed",
-    "trust", "distrust", "primary guide", "plausible", "blindly", "override",
-    "fall back", "fallback",
+    "correct",
+    "incorrect",
+    "reliable",
+    "unreliable",
+    "candidate",
+    "proposed",
+    "trust",
+    "distrust",
+    "primary guide",
+    "plausible",
+    "blindly",
+    "override",
+    "fall back",
+    "fallback",
 ]
 
 
@@ -102,7 +114,9 @@ def test_input_specific_blocks_contain_no_banned_reliability_words():
     for condition in ["raw", "flat", "predicted_graph", "oracle_graph", "shuffled_graph"]:
         block = _extract_input_specific(get_skill_for_condition(condition)).lower()
         for word in _BANNED_WORDS:
-            assert word not in block, f"banned word {word!r} found in {condition} input-specific block"
+            assert (
+                word not in block
+            ), f"banned word {word!r} found in {condition} input-specific block"
 
 
 def test_input_specific_blocks_do_not_gate_instructions_on_link_presence():

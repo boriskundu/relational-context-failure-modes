@@ -10,6 +10,7 @@ are correlated (they share one source text, one model call context), so resampli
 independently when the real independent unit is ~50 documents would produce artificially tight
 confidence intervals. See Key decision #9.
 """
+
 import random
 from dataclasses import dataclass
 
@@ -111,25 +112,44 @@ def score_field(
             )
 
     return FieldScore(
-        doc_id=doc_id, condition=condition, model=model, stage=stage, question_id=question_id,
-        predicted_answer=predicted_answer, gold_answer=gold_answer,
-        exact_match=exact_match, fuzzy_score=fuzzy_score, fuzzy_match=fuzzy_match,
-        omission=omission, hallucination=hallucination, misassociation=misassociation,
+        doc_id=doc_id,
+        condition=condition,
+        model=model,
+        stage=stage,
+        question_id=question_id,
+        predicted_answer=predicted_answer,
+        gold_answer=gold_answer,
+        exact_match=exact_match,
+        fuzzy_score=fuzzy_score,
+        fuzzy_match=fuzzy_match,
+        omission=omission,
+        hallucination=hallucination,
+        misassociation=misassociation,
         relation_following_error=relation_following_error,
     )
 
 
 # ── Aggregation ──────────────────────────────────────────────────────────────
 
+
 def aggregate(scores: list[FieldScore]) -> dict:
     """Summary stats over a flat list of FieldScore — the caller filters to whatever slice
     (condition, model, stage) it wants before calling this."""
     n = len(scores)
     if n == 0:
-        return {"n": 0, "accuracy": None, "exact_match_rate": None,
-                "hallucination_rate": None, "omission_rate": None, "misassociation_rate": None,
-                "n_relation_following_applicable": 0, "relation_following_error_rate": None}
-    applicable = [s.relation_following_error for s in scores if s.relation_following_error is not None]
+        return {
+            "n": 0,
+            "accuracy": None,
+            "exact_match_rate": None,
+            "hallucination_rate": None,
+            "omission_rate": None,
+            "misassociation_rate": None,
+            "n_relation_following_applicable": 0,
+            "relation_following_error_rate": None,
+        }
+    applicable = [
+        s.relation_following_error for s in scores if s.relation_following_error is not None
+    ]
     return {
         "n": n,
         "accuracy": sum(s.fuzzy_match for s in scores) / n,
@@ -141,11 +161,14 @@ def aggregate(scores: list[FieldScore]) -> dict:
         # score_field's docstring. Oracle's should always be n=0 (sanity check: its edges are never
         # wrong by construction).
         "n_relation_following_applicable": len(applicable),
-        "relation_following_error_rate": (sum(applicable) / len(applicable)) if applicable else None,
+        "relation_following_error_rate": (
+            (sum(applicable) / len(applicable)) if applicable else None
+        ),
     }
 
 
 # ── RQ5: correction / regression / net correction ───────────────────────────
+
 
 def correction_regression(initial_scores: list[FieldScore], final_scores: list[FieldScore]) -> dict:
     """Per Key decision (RQ5): NOT a naive initial-vs-final accuracy delta (a ceiling-effect
@@ -180,6 +203,7 @@ def correction_regression(initial_scores: list[FieldScore], final_scores: list[F
 
 
 # ── Document-level paired bootstrap ──────────────────────────────────────────
+
 
 def _percentile_ci(deltas: list[float], alpha: float) -> tuple[float | None, float | None]:
     """Two-sided percentile CI at the given alpha (e.g. 0.05 for 95%, 0.0125 for a
@@ -285,8 +309,10 @@ def bootstrap_interaction_contrast(
     mean-of-per-document-rates macro-average, which is a different (and here, wrong) estimand.
     """
     doc_id_sets = [
-        {s.doc_id for s in scores_a_treatment}, {s.doc_id for s in scores_a_control},
-        {s.doc_id for s in scores_b_treatment}, {s.doc_id for s in scores_b_control},
+        {s.doc_id for s in scores_a_treatment},
+        {s.doc_id for s in scores_a_control},
+        {s.doc_id for s in scores_b_treatment},
+        {s.doc_id for s in scores_b_control},
     ]
     doc_ids = sorted(set.intersection(*doc_id_sets))
     n_dropped_one_sided = len(set.union(*doc_id_sets)) - len(doc_ids)
@@ -339,6 +365,7 @@ def bootstrap_interaction_contrast(
 
 # ── Question-text alignment ──────────────────────────────────────────────────
 
+
 def align_answers_to_pairs(
     question_pairs: list[tuple[int, str]],
     returned: dict[str, str],
@@ -390,7 +417,9 @@ def relation_following_error_rate_statistic(scores: list[FieldScore]) -> float:
     rate (a macro-average), the same pooled/micro convention every other headline in this project
     uses.
     """
-    applicable = [s.relation_following_error for s in scores if s.relation_following_error is not None]
+    applicable = [
+        s.relation_following_error for s in scores if s.relation_following_error is not None
+    ]
     if not applicable:
         return 0.0
     return sum(applicable) / len(applicable)

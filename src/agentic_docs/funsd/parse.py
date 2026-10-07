@@ -9,11 +9,12 @@ Confirmed empirically against the real dataset (Phase 0 spike, 2026-08-31), not 
     (frequently one logical answer split across line-wrapped boxes; occasionally a genuine
     multi-option/checklist question). Those are concatenated in reading order into one scored
     answer per question — a deliberate, disclosed simplification (see ARCHITECTURE.md), not an
-    attempt to hand-classify every ambiguous case under a tight deadline.
+    attempt to hand-classify every ambiguous case.
   - Headers can link to multiple question entities (a section header chaining to several
     sub-questions) — these are kept as structural context for the graph representations but are
     never scorable targets themselves (only question->answer edges are scored).
 """
+
 from dataclasses import dataclass
 
 
@@ -101,7 +102,9 @@ def parse_document(annotation: dict, doc_id: str) -> DocumentRecord:
             )
         )
 
-    return DocumentRecord(doc_id=doc_id, entities=entities, links=links, scorable_pairs=scorable_pairs)
+    return DocumentRecord(
+        doc_id=doc_id, entities=entities, links=links, scorable_pairs=scorable_pairs
+    )
 
 
 def document_from_dict(d: dict) -> DocumentRecord:
@@ -109,8 +112,10 @@ def document_from_dict(d: dict) -> DocumentRecord:
     (``asdict`` of a DocumentRecord — plain dicts/lists/tuples-as-lists)."""
     return DocumentRecord(
         doc_id=d["doc_id"],
-        entities=[Entity(id=e["id"], text=e["text"], label=e["label"], box=tuple(e["box"]))
-                  for e in d["entities"]],
+        entities=[
+            Entity(id=e["id"], text=e["text"], label=e["label"], box=tuple(e["box"]))
+            for e in d["entities"]
+        ],
         links=[tuple(pair) for pair in d["links"]],
         scorable_pairs=[
             ScorablePair(
@@ -128,5 +133,6 @@ def load_documents(path) -> list[DocumentRecord]:
     """Load the combined documents JSON file (config.DOCUMENTS_PATH) into a list of DocumentRecord."""
     import json
     from pathlib import Path
+
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     return [document_from_dict(d) for d in data]

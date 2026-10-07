@@ -4,6 +4,7 @@ Tests for the five representation builders. The content-set-equality guard
 property in the whole design — it's the direct fix for the leakage bug that started the multi-round
 redesign documented in the plan (see plan Context section).
 """
+
 from agentic_docs.funsd.parse import parse_document
 from agentic_docs.representations._common import shown_answer_text_by_question
 from agentic_docs.representations.flat import build_flat
@@ -114,8 +115,11 @@ def test_shown_answer_text_absent_for_question_with_no_edge():
             Entity(id=2, text="Bob", label="answer", box=(20, 0, 30, 10)),
         ],
         links=[],
-        scorable_pairs=[ScorablePair(question_id=1, question_text="Name:",
-                                      answer_entity_ids=(2,), gold_answer_text="Bob")],
+        scorable_pairs=[
+            ScorablePair(
+                question_id=1, question_text="Name:", answer_entity_ids=(2,), gold_answer_text="Bob"
+            )
+        ],
     )
     # No edges at all (e.g. a Predicted-graph heuristic miss) -- question 1 has no entry.
     assert shown_answer_text_by_question(doc, []) == {}
@@ -127,7 +131,9 @@ def test_all_conditions_carry_identical_text_content(sample_annotation):
 
     raw_text_set = sorted(t for t in build_raw(doc).split("\n") if t)
     flat_text_set = sorted(row["text"] for row in build_flat(doc) if row["text"])
-    oracle_text_set = sorted(row["text"] for row in build_oracle_graph(doc)["entities"] if row["text"])
+    oracle_text_set = sorted(
+        row["text"] for row in build_oracle_graph(doc)["entities"] if row["text"]
+    )
     predicted_text_set = sorted(
         row["text"] for row in build_predicted_graph(doc)["entities"] if row["text"]
     )

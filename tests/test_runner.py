@@ -14,8 +14,11 @@ def _tiny_doc(doc_id: str) -> DocumentRecord:
         doc_id=doc_id,
         entities=entities,
         links=[(0, 1)],
-        scorable_pairs=[ScorablePair(question_id=0, question_text="Name:",
-                                      answer_entity_ids=(1,), gold_answer_text="Bob")],
+        scorable_pairs=[
+            ScorablePair(
+                question_id=0, question_text="Name:", answer_entity_ids=(1,), gold_answer_text="Bob"
+            )
+        ],
     )
 
 
@@ -31,6 +34,7 @@ class AlwaysFailsClient:
 
 class CountingClient:
     """Tracks how many times generate_text was called, to prove resumed cells are skipped."""
+
     calls = 0
 
     def generate_text(self, prompt: str, max_tokens=None) -> str:
@@ -45,8 +49,13 @@ def test_cell_key_format():
 def test_run_model_writes_partial_and_completes_all_cells(tmp_path):
     docs = [_tiny_doc("d1"), _tiny_doc("d2")]
     out_path = tmp_path / "run.json"
-    rows = run_model("fake-model", docs, ["raw", "flat"], out_path,
-                      client_factory=lambda name: AlwaysSucceedsClient())
+    rows = run_model(
+        "fake-model",
+        docs,
+        ["raw", "flat"],
+        out_path,
+        client_factory=lambda name: AlwaysSucceedsClient(),
+    )
 
     assert len(rows) == 4  # 2 docs x 2 conditions
     partial_path = tmp_path / "run.fake-model.json"
@@ -62,31 +71,41 @@ def test_run_model_resumes_and_skips_already_completed_cells(tmp_path):
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
     CountingClient.calls = 0
-    run_model("fake-model", docs, ["raw", "flat"], out_path, client_factory=lambda name: CountingClient())
+    run_model(
+        "fake-model", docs, ["raw", "flat"], out_path, client_factory=lambda name: CountingClient()
+    )
     assert CountingClient.calls == 2 * 2  # 1 doc x 2 conditions x 2 calls per cell (extract+verify)
 
     # Re-run against the same out_path — every cell already succeeded, so no new calls should happen.
-    run_model("fake-model", docs, ["raw", "flat"], out_path, client_factory=lambda name: CountingClient())
+    run_model(
+        "fake-model", docs, ["raw", "flat"], out_path, client_factory=lambda name: CountingClient()
+    )
     assert CountingClient.calls == 4  # unchanged
 
 
 def test_run_model_retries_failed_cells_on_resume(tmp_path):
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    run_model("fake-model", docs, ["raw"], out_path, client_factory=lambda name: AlwaysFailsClient())
+    run_model(
+        "fake-model", docs, ["raw"], out_path, client_factory=lambda name: AlwaysFailsClient()
+    )
     partial_path = tmp_path / "run.fake-model.json"
     saved = json.loads(partial_path.read_text())
     assert all(r["parse_error"] for r in saved.values())
 
     # Resume with a client that now succeeds — the previously-failed cell must be retried, not skipped.
-    rows = run_model("fake-model", docs, ["raw"], out_path, client_factory=lambda name: AlwaysSucceedsClient())
+    rows = run_model(
+        "fake-model", docs, ["raw"], out_path, client_factory=lambda name: AlwaysSucceedsClient()
+    )
     assert all(not r["parse_error"] for r in rows.values())
 
 
 def test_status_reports_progress_without_api_calls(tmp_path):
     docs = [_tiny_doc("d1"), _tiny_doc("d2")]
     out_path = tmp_path / "run.json"
-    run_model("m1", docs, ["raw", "flat"], out_path, client_factory=lambda name: AlwaysSucceedsClient())
+    run_model(
+        "m1", docs, ["raw", "flat"], out_path, client_factory=lambda name: AlwaysSucceedsClient()
+    )
 
     report = status(["m1"], docs, ["raw", "flat"], out_path)
     assert report["m1"]["done"] == 4
@@ -97,8 +116,9 @@ def test_status_reports_progress_without_api_calls(tmp_path):
 def test_run_grid_merges_all_models_into_one_output_file(tmp_path):
     docs = [_tiny_doc("d1")]
     out_path = tmp_path / "run.json"
-    merged = run_grid(["m1", "m2"], docs, ["raw"], out_path,
-                       client_factory=lambda name: AlwaysSucceedsClient())
+    merged = run_grid(
+        ["m1", "m2"], docs, ["raw"], out_path, client_factory=lambda name: AlwaysSucceedsClient()
+    )
     assert len(merged) == 2  # 1 doc x 1 condition x 2 models
     assert out_path.exists()
     saved = json.loads(out_path.read_text())
@@ -156,7 +176,9 @@ def test_run_grid_isolates_one_models_crash_from_the_rest(tmp_path):
             raise KeyError("MISSING_API_KEY")
         return AlwaysSucceedsClient()
 
-    merged = run_grid(["good-model", "broken-model"], docs, ["raw"], out_path, client_factory=factory)
+    merged = run_grid(
+        ["good-model", "broken-model"], docs, ["raw"], out_path, client_factory=factory
+    )
     assert len(merged) == 1  # only good-model's cell
     assert all(row["model"] == "good-model" for row in merged.values())
     assert out_path.exists()  # the merged file must still be written for the model that succeeded

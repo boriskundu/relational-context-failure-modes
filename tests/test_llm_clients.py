@@ -8,6 +8,7 @@ always raise, even if the (possibly incomplete) text happens to still look parse
 accepting truncated output was the root cause of two earlier bugs (Claude's ThinkingBlock crash,
 Groq/Qwen's empty-content-under-reasoning failure).
 """
+
 import pytest
 
 from agentic_docs.llm_clients import (
@@ -39,7 +40,10 @@ def _bare(cls):
 def test_anthropic_raises_on_max_tokens_stop_reason(monkeypatch):
     client = _bare(AnthropicClient)
     client.model_id, client.temperature, client.thinking, client.effort = (
-        "m", None, {"type": "adaptive"}, None
+        "m",
+        None,
+        {"type": "adaptive"},
+        None,
     )
     fake_resp = _AnthropicResp("max_tokens", [_Block("thinking")])
 

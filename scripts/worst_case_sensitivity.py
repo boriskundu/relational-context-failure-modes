@@ -7,7 +7,7 @@ Four persistent-parse-failure cells exist in results/extractions/run3.json (foun
 parse_error=True): Claude/shuffled_graph on one document, and Qwen/predicted_graph,
 Qwen/shuffled_graph, Qwen/oracle_graph all on a second, different document. Ad hoc script, zero
 new API calls. Run with:
-    .venv/Scripts/python scripts/worst_case_sensitivity.py
+    python scripts/worst_case_sensitivity.py
 """
 import json
 
